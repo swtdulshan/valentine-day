@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Hashi ❤️</title>
+    <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --secondary-pink: #ff758f;
+            --glass: rgba(255, 255, 255, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #0f0c29);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: white;
+            text-align: center;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* BACKGROUND EFFECTS */
+        #fireworks {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 200; /* High z-index to show over everything */
+        }
+
+        .heart {
+            position: fixed;
+            top: -30px;
+            font-size: 20px;
+            animation: fall linear forwards;
+            z-index: 2;
+            user-select: none;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* INTRO */
+        #intro {
+            position: fixed;
+            inset: 0;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(24px, 8vw, 48px);
+            font-weight: bold;
+            z-index: 300;
+            animation: fadeOut 3s forwards ease-in-out;
+            animation-delay: 2s;
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* UI COMPONENTS */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            position: relative;
+        }
+
+        #passwordScreen {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        input {
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 12px;
+            border: none;
+            width: 100%;
+            max-width: 250px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+        }
+
+        button {
+            padding: 15px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(to right, #ff4d6d, #ff758f);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+            position: relative;
+            z-index: 210; /* Above fireworks */
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 77, 109, 0.6);
+        }
+
+        /* MAIN CONTENT */
+        #main {
+            display: none;
+            padding: 60px 20px;
+            animation: fadeIn 1.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .slideshow {
+            width: 100%;
+            max-width: 450px;
+            height: 450px;
+            margin: 30px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .slideshow img {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+
+        #timer {
+            font-size: clamp(14px, 4.5vw, 20px);
+            margin: 25px 0;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            letter-spacing: 1px;
+        }
+
+        /* MUSIC TOGGLE */
+        #musicToggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 250;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid white;
+            cursor: pointer;
+        }
+
+        /* POPUP */
+        #popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85); /* Slightly transparent so fireworks show behind */
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 180;
+            padding: 20px;
+        }
+
+        #secret { display: none; color: #ffeb3b; font-weight: bold; margin-top: 20px; animation: fadeIn 1s; }
+
+        h1 { font-size: clamp(28px, 6vw, 42px); margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<canvas id="fireworks"></canvas>
+<div id="intro">For My Hashi ❤️</div>
+
+<audio id="music" loop>
+    <source src="./love.mp3" type="audio/mpeg">
+</audio>
+<button id="musicToggle" onclick="toggleMusic()">🎵</button>
+
+<div id="passwordScreen">
+    <div class="glass-card">
+        <h2>Enter Our Special Date 💕</h2>
+        <p style="font-size: 0.85rem; opacity: 0.7; margin: 10px 0 20px;">Hint: DDMM format</p>
+        <input type="password" id="pass" placeholder="••••" inputmode="numeric">
+        <br>
+        <button onclick="checkPass()">Unlock My Heart</button>
+    </div>
+</div>
+
+<div id="main">
+    <div class="glass-card" style="max-width: 850px; margin: auto;">
+        <h1 onclick="secretClick()" style="cursor: pointer;">Happy Valentine’s Day Hashi 💖</h1>
+        <h2 id="message" style="min-height: 2em; color: #ffccd5; font-style: italic;"></h2>
+
+        <div id="timer">Calculating our love...</div>
+
+        <div class="slideshow" id="slideshow">
+            <img src="./one.jpeg" style="opacity: 1;">
+            <img src="./two.jpeg">
+            <img src="./three.jpeg">
+            <img src="./four.jpeg">
+            <img src="./five.jpeg">
+        </div>
+
+        <button onclick="showProposal()">Click For A Surprise 💍</button>
+
+        <div id="secret">
+            ✨ Secret Unlocked! ✨<br>
+            Aiye man oyata hugaaak adarei Hashi! You are my world! ❤️
+        </div>
+    </div>
+</div>
+
+<div id="popup">
+    <div class="glass-card" style="border: 2px solid var(--primary-pink);">
+        <h1 style="color: #ff4d6d;">Hashi 💍</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">Will you stay with me forever and always?</p>
+        <button onclick="sendWhatsApp()">Yes, I Will! 💕</button>
+    </div>
+</div>
+
+<script>
+    const music = document.getElementById("music");
+    const musicBtn = document.getElementById("musicToggle");
+
+    // Start visuals immediately on load
+    window.onload = () => {
+        startEffects();
+    };
+
+    function toggleMusic() {
+        if (music.paused) {
+            music.play();
+            musicBtn.innerHTML = "🎶";
+        } else {
+            music.pause();
+            musicBtn.innerHTML = "🎵";
+        }
+    }
+
+    /* PASSWORD LOGIC */
+    function checkPass(){
+        if(document.getElementById("pass").value=="0604"){
+            document.getElementById("passwordScreen").style.display="none";
+            document.getElementById("main").style.display="block";
+            music.play().catch(e => console.log("Music needs interaction"));
+            musicBtn.innerHTML = "🎶";
+            typeMessage();
+        } else {
+            alert("Oops! Check the date again, my love! 😜");
+        }
+    }
+
+    /* TYPING EFFECT */
+    const text="From 6th April 2025, my life became beautiful because of you. You are my forever and my greatest happiness... ❤️";
+    let i=0;
+    function typeMessage(){
+        if(i < text.length){
+            document.getElementById("message").innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typeMessage, 55);
+        }
+    }
+
+    /* LOVE TIMER */
+    const startDate = new Date("2025-04-06T00:00:00");
+    setInterval(() => {
+        const now = new Date();
+        const diff = now - startDate;
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        document.getElementById("timer").innerHTML = 
+            `Together for: ${d} Days • ${h} Hours • ${m} Mins • ${s} Secs ❤️`;
+    }, 1000);
+
+    /* SLIDESHOW */
+    let slides = document.querySelectorAll(".slideshow img");
+    let index = 0;
+    setInterval(() => {
+        slides[index].style.opacity = 0;
+        index = (index + 1) % slides.length;
+        slides[index].style.opacity = 1;
+    }, 3500);
+
+    /* SECRET INTERACTION */
+    let clicks = 0;
+    function secretClick(){
+        clicks++;
+        if(clicks == 5) {
+            document.getElementById("secret").style.display="block";
+            for(let j=0; j<3; j++) setTimeout(createFirework, j*300); 
+        }
+    }
+
+    /* PROPOSAL SURPRISE */
+    function showProposal(){
+        document.getElementById("popup").style.display="flex";
+        // Boost fireworks frequency for the surprise!
+        setInterval(createFirework, 800); 
+    }
+
+    function sendWhatsApp(){
+        const phone = "94770576860";
+        const msg = "Aiye man oyata Godak Adarei.. 💍💕 Yes, forever!";
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`);
+    }
+
+    /* FIREWORKS & HEARTS ENGINE */
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    let fireworksList = [];
+
+    function resize(){
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    function createFirework(){
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * (canvas.height * 0.7);
+        const color = `hsl(${Math.random()*360}, 100%, 65%)`;
+        let particles = [];
+        for(let i=0; i<60; i++){
+            particles.push({
+                x, y, 
+                vx: (Math.random() - 0.5) * 10,
+                vy: (Math.random() - 0.5) * 10,
+                life: 1.0,
+                color
+            });
+        }
+        fireworksList.push(particles);
+    }
+
+    function updateFireworks(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        fireworksList.forEach((pList, i) => {
+            pList.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.05; 
+                p.life -= 0.012;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2.5, 0, Math.PI*2);
+                ctx.fill();
+            });
+            if(pList[0] && pList[0].life <= 0) fireworksList.splice(i, 1);
+        });
+        requestAnimationFrame(updateFireworks);
+    }
+
+    function createHeart(){
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = ["❤️","💖","💕","💗"][Math.floor(Math.random()*4)];
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = (Math.random() * 10 + 15) + "px";
+        heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 7000);
+    }
+
+    function startEffects(){
+        updateFireworks();
+        setInterval(createFirework, 2000); // Regular interval
+        setInterval(createHeart, 450); // Regular hearts
+    }
+</script>
+
+</body>
+</html>
